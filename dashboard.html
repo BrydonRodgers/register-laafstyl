@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #1a1a24;
+  --border: #ffffff10;
+  --border2: #ffffff1a;
+  --accent: #7c6aff;
+  --accent2: #a78bfa;
+  --green: #22d3a0;
+  --red: #ff4d6d;
+  --amber: #fbbf24;
+  --gold: #f59e0b;
+  --text: #f0f0f8;
+  --muted: #6b6b8a;
+  --card-glow: 0 0 40px rgba(124,106,255,0.06);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Mono',monospace; background:var(--bg); color:var(--text); min-height:100vh; line-height:1.6; }
+body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events:none; z-index:0; opacity:0.4; }
+.page { position:relative; z-index:1; }
+
+/* ── LOGIN ── */
+.login-wrap { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; position:relative; overflow:hidden; }
+.login-video { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.login-video video { width:100%; height:100%; object-fit:cover; object-position:center; }
+.login-video::after { content:''; position:absolute; inset:0; background:rgba(10,10,15,0.78); }
+.login-card { background:rgba(17,17,24,0.85); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid var(--border2); border-radius:20px; padding:48px; width:100%; max-width:420px; box-shadow:var(--card-glow),0 40px 80px rgba(0,0,0,.5); animation:fadeUp .5s ease; position:relative; z-index:2; }
+.login-logo { font-family:'Syne',sans-serif; font-size:12px; font-weight:600; color:var(--accent2); letter-spacing:.2em; text-transform:uppercase; margin-bottom:32px; display:flex; align-items:center; gap:8px; }
+.login-logo::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
+.login-title { font-family:'Syne',sans-serif; font-size:30px; font-weight:800; margin-bottom:6px; line-height:1.1; }
+.login-sub { color:var(--muted); font-size:13px; margin-bottom:32px; }
+
+/* Mode toggle on login */
+.mode-toggle { display:flex; gap:8px; margin-bottom:28px; background:var(--bg); border:1px solid var(--border2); border-radius:10px; padding:4px; }
+.mode-btn { flex:1; padding:9px; border-radius:7px; border:none; background:none; color:var(--muted); font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:.06em; transition:all .2s; }
+.mode-btn.active { background:var(--surface2); color:var(--text); }
+
+.field { margin-bottom:18px; }
+.field label { display:block; font-size:11px; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.12em; margin-bottom:7px; }
+.field input { width:100%; background:var(--bg); border:1px solid var(--border2); border-radius:10px; padding:12px 15px; color:var(--text); font-family:'DM Mono',monospace; font-size:14px; transition:border-color .2s,box-shadow .2s; }
+.field input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(124,106,255,.15); }
+.btn-primary { width:100%; background:var(--accent); color:white; border:none; border-radius:10px; padding:13px; font-family:'Syne',sans-serif; font-size:15px; font-weight:700; cursor:pointer; transition:all .2s; margin-top:4px; }
+.btn-primary:hover { background:var(--accent2); transform:translateY(-1px); box-shadow:0 8px 24px rgba(124,106,255,.35); }
+.btn-primary:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+.btn-primary.gold { background:var(--gold); }
+.btn-primary.gold:hover { background:#d97706; box-shadow:0 8px 24px rgba(245,158,11,.35); }
+.error-box { background:rgba(255,77,109,.1); border:1px solid rgba(255,77,109,.3); border-radius:8px; padding:11px 15px; color:var(--red); font-size:13px; margin-top:14px; }
+
+/* ── TOPBAR ── */
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:18px 32px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:10; }
+.brand { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--accent2); display:flex; align-items:center; gap:8px; }
+.brand::before { content:''; width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); animation:pulse 2s infinite; }
+.topbar-right { display:flex; align-items:center; gap:12px; }
+.admin-badge { background:rgba(245,158,11,.15); border:1px solid rgba(245,158,11,.3); color:var(--gold); border-radius:20px; padding:4px 12px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+.client-pill { background:var(--surface2); border:1px solid var(--border2); border-radius:20px; padding:5px 13px; font-size:12px; color:var(--muted); }
+.client-pill span { color:var(--text); font-weight:500; }
+.logout-btn { background:none; border:1px solid var(--border2); border-radius:8px; padding:6px 12px; color:var(--muted); font-family:'DM Mono',monospace; font-size:12px; cursor:pointer; transition:all .2s; }
+.logout-btn:hover { border-color:var(--red); color:var(--red); }
+
+.main { padding:28px 32px; max-width:960px; margin:0 auto; }
+
+/* ── ADMIN CLIENT LIST ── */
+.admin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+.admin-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; }
+.admin-sub { color:var(--muted); font-size:13px; margin-top:2px; }
+.revenue-badge { background:rgba(34,211,160,.1); border:1px solid rgba(34,211,160,.25); border-radius:12px; padding:12px 20px; text-align:right; }
+.revenue-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:3px; }
+.revenue-value { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:var(--green); }
+
+.clients-grid { display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
+.client-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px 22px; display:grid; grid-template-columns:1fr auto auto; gap:16px; align-items:center; cursor:pointer; transition:border-color .2s,transform .15s; }
+.client-card:hover { border-color:var(--border2); transform:translateY(-1px); }
+.client-card.offline { border-left:3px solid var(--red); }
+.client-card.online { border-left:3px solid var(--green); }
+.cc-name { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:3px; display:flex; align-items:center; gap:8px; }
+.cc-meta { font-size:12px; color:var(--muted); }
+.cc-pack { display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; padding:2px 8px; border-radius:5px; margin-left:6px; }
+.cc-pack.p2 { background:rgba(124,106,255,.15); color:var(--accent2); }
+.cc-pack.p1 { background:rgba(107,107,138,.15); color:var(--muted); }
+.usage-mini { text-align:right; min-width:80px; }
+.usage-mini-bar { height:4px; background:var(--surface2); border-radius:99px; overflow:hidden; margin-bottom:5px; }
+.usage-mini-fill { height:100%; border-radius:99px; background:var(--accent); }
+.usage-mini-fill.warn { background:var(--amber); }
+.usage-mini-fill.danger { background:var(--red); }
+.usage-mini-pct { font-size:11px; color:var(--muted); }
+.view-btn { background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:8px 14px; color:var(--muted); font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap; }
+.view-btn:hover { border-color:var(--accent); color:var(--accent2); }
+
+.admin-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+.sum-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
+.sum-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:8px; }
+.sum-value { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; }
+
+/* ── CLIENT DASHBOARD ── */
+.back-btn { display:inline-flex; align-items:center; gap:6px; background:none; border:1px solid var(--border2); border-radius:8px; padding:7px 13px; color:var(--muted); font-family:'DM Mono',monospace; font-size:12px; cursor:pointer; transition:all .2s; margin-bottom:20px; }
+.back-btn:hover { color:var(--text); border-color:var(--border2); }
+
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; position:relative; overflow:hidden; transition:border-color .2s; animation:fadeUp .4s ease backwards; }
+.stat-card::after { content:''; position:absolute; top:0; right:0; width:70px; height:70px; border-radius:50%; filter:blur(28px); opacity:.12; }
+.stat-card.accent::after { background:var(--accent); }
+.stat-card.green::after { background:var(--green); }
+.stat-card.amber::after { background:var(--amber); }
+.stat-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.12em; margin-bottom:10px; }
+.stat-value { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; margin-bottom:3px; }
+.stat-sub { font-size:12px; color:var(--muted); }
+
+.usage-section { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:20px; animation:fadeUp .4s .1s ease backwards; }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.section-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
+.usage-numbers { font-size:13px; color:var(--muted); }
+.usage-numbers strong { color:var(--text); }
+.usage-track { height:5px; background:var(--surface2); border-radius:99px; overflow:hidden; margin-bottom:7px; }
+.usage-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width 1s cubic-bezier(.4,0,.2,1); }
+.usage-fill.warn { background:linear-gradient(90deg,var(--amber),#f97316); }
+.usage-fill.danger { background:linear-gradient(90deg,var(--red),#ff6b35); }
+.usage-pct { font-size:12px; color:var(--muted); }
+
+.tabs { display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:4px; margin-bottom:20px; animation:fadeUp .4s .15s ease backwards; }
+.tab { flex:1; padding:9px; border-radius:7px; border:none; background:none; color:var(--muted); font-family:'Syne',sans-serif; font-size:11px; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:.08em; transition:all .2s; }
+.tab.active { background:var(--surface2); color:var(--text); }
+.tab:hover:not(.active) { color:var(--text); }
+
+.panel { display:none; animation:fadeUp .3s ease; }
+.panel.active { display:block; }
+
+.prompt-box { background:var(--bg); border:1px solid var(--border2); border-radius:10px; padding:20px; font-size:13px; line-height:1.8; color:#c0c0d8; white-space:pre-wrap; max-height:280px; overflow-y:auto; margin-bottom:16px; }
+.prompt-box::-webkit-scrollbar { width:3px; }
+.prompt-box::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-grid .full { grid-column:1/-1; }
+.f-group { margin-bottom:2px; }
+.f-group label { display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
+.f-group input, .f-group textarea { width:100%; background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:10px 13px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; transition:border-color .2s; resize:none; }
+.f-group input:focus, .f-group textarea:focus { outline:none; border-color:var(--accent); }
+.f-group textarea { min-height:80px; resize:vertical; }
+.btn-row { display:flex; gap:10px; margin-top:18px; }
+.btn-sm { padding:10px 18px; border-radius:9px; font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:all .2s; border:none; letter-spacing:.02em; }
+.btn-sm.primary { background:var(--accent); color:white; }
+.btn-sm.primary:hover { background:var(--accent2); box-shadow:0 5px 18px rgba(124,106,255,.3); }
+.btn-sm.ghost { background:var(--surface2); color:var(--muted); border:1px solid var(--border2); }
+.btn-sm.ghost:hover { color:var(--text); }
+.btn-sm:disabled { opacity:.4; cursor:not-allowed; }
+
+.service-header { display:grid; grid-template-columns:1fr 100px 100px 36px; gap:10px; padding:0 13px; margin-bottom:7px; }
+.service-header span { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
+.services-list { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+.service-row { display:grid; grid-template-columns:1fr 100px 100px 36px; gap:10px; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:9px; padding:11px 13px; animation:fadeUp .3s ease; }
+.service-row input { background:transparent; border:none; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; padding:0; width:100%; }
+.service-row input:focus { outline:none; }
+.service-row input::placeholder { color:var(--muted); }
+.del-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:all .2s; padding:0; line-height:1; }
+.del-btn:hover { background:rgba(255,77,109,.15); color:var(--red); }
+.add-btn { background:none; border:1px dashed var(--border2); border-radius:9px; padding:11px; color:var(--muted); font-family:'DM Mono',monospace; font-size:13px; cursor:pointer; width:100%; text-align:center; transition:all .2s; }
+.add-btn:hover { border-color:var(--accent); color:var(--accent2); background:rgba(124,106,255,.05); }
+
+.hours-grid { display:flex; flex-direction:column; gap:7px; }
+.hour-row { display:grid; grid-template-columns:90px 1fr 1fr 90px; gap:10px; align-items:center; background:var(--bg); border:1px solid var(--border); border-radius:9px; padding:11px 15px; }
+.hour-day { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+.hour-row input[type="time"] { background:var(--surface); border:1px solid var(--border2); border-radius:7px; padding:7px 9px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; width:100%; }
+.hour-row input[type="time"]:disabled { opacity:.3; }
+.hour-row input[type="time"]:focus { outline:none; border-color:var(--accent); }
+.closed-toggle { display:flex; align-items:center; gap:7px; cursor:pointer; user-select:none; }
+.toggle-track { width:34px; height:19px; background:var(--surface2); border-radius:99px; border:1px solid var(--border2); position:relative; transition:background .2s; flex-shrink:0; }
+.toggle-track.on { background:var(--red); border-color:var(--red); }
+.toggle-thumb { position:absolute; top:2px; left:2px; width:13px; height:13px; border-radius:50%; background:white; transition:transform .2s; }
+.toggle-track.on .toggle-thumb { transform:translateX(15px); }
+.toggle-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+
+/* ── ADMIN ONLY: CLIENT STATUS PANEL ── */
+.status-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+.status-item { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px 16px; }
+.status-item-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:5px; }
+.status-item-value { font-size:14px; font-weight:600; }
+.status-online { color:var(--green); }
+.status-offline { color:var(--red); }
+
+.loading-overlay { position:fixed; inset:0; background:rgba(10,10,15,.85); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:50; opacity:0; pointer-events:none; transition:opacity .3s; }
+.loading-overlay.show { opacity:1; pointer-events:all; }
+.spinner { width:38px; height:38px; border:3px solid var(--border2); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; }
+.loading-text { font-family:'Syne',sans-serif; font-size:13px; color:var(--muted); margin-top:14px; text-align:center; }
+
+.toast { position:fixed; bottom:28px; right:28px; background:var(--surface); border:1px solid var(--border2); border-radius:10px; padding:13px 18px; font-size:13px; box-shadow:0 16px 36px rgba(0,0,0,.4); transform:translateY(70px); opacity:0; transition:all .35s cubic-bezier(.4,0,.2,1); z-index:100; }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.success { border-color:rgba(34,211,160,.3); }
+.toast.error { border-color:rgba(255,77,109,.3); }
+
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+@media(max-width:640px) {
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .form-grid { grid-template-columns:1fr; }
+  .main { padding:16px; }
+  .topbar { padding:14px 16px; }
+  .hour-row { grid-template-columns:60px 1fr 1fr 80px; }
+  .admin-summary { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══ LOGIN ══ -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-video">
+    <video autoplay muted loop playsinline>
+      <source src="views.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="login-card">
+    <div class="login-logo">WhatsApp AI Platform</div>
+    <h1 class="login-title">Welcome back</h1>
+    <p class="login-sub">Sign in to your dashboard</p>
+
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeClientBtn" onclick="setMode('client')">Client Login</button>
+      <button class="mode-btn" id="modeAdminBtn" onclick="setMode('admin')">Admin Login</button>
+    </div>
+
+    <div id="clientFields">
+      <div class="field">
+        <label>Client ID</label>
+        <input type="text" id="clientInput" placeholder="your-business-name" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="passInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+
+    <button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div id="loginErr" class="error-box" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ══ TOPBAR (shared) ══ -->
+<div style="display:none" id="appShell">
+  <div class="topbar">
+    <div class="brand">AI Dashboard</div>
+    <div class="topbar-right">
+      <div class="admin-badge" id="adminBadge" style="display:none">Admin</div>
+      <div class="client-pill" id="clientPill" style="display:none">Viewing: <span id="clientLabel"></span></div>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <!-- ══ ADMIN VIEW ══ -->
+  <div id="adminView" style="display:none">
+    <div class="main">
+      <div class="admin-header">
+        <div>
+          <div class="admin-title">All Clients</div>
+          <div class="admin-sub" id="adminSubtitle">Loading...</div>
+        </div>
+        <div class="revenue-badge">
+          <div class="revenue-label">Monthly Revenue</div>
+          <div class="revenue-value" id="adminRevenue">—</div>
+        </div>
+      </div>
+
+      <div class="admin-summary">
+        <div class="sum-card"><div class="sum-label">Total Clients</div><div class="sum-value" id="sumTotal">—</div></div>
+        <div class="sum-card"><div class="sum-label">Online Now</div><div class="sum-value" id="sumOnline" style="color:var(--green)">—</div></div>
+        <div class="sum-card"><div class="sum-label">Pack 1</div><div class="sum-value" id="sumP1">—</div></div>
+        <div class="sum-card"><div class="sum-label">Pack 2</div><div class="sum-value" id="sumP2" style="color:var(--accent2)">—</div></div>
+      </div>
+
+      <div class="clients-grid" id="clientsGrid">
+        <div style="color:var(--muted);text-align:center;padding:40px">Loading clients...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CLIENT DASHBOARD ══ -->
+  <div id="clientView" style="display:none">
+    <div class="main">
+      <button class="back-btn" id="backBtn" onclick="goBackToAdmin()" style="display:none">← All Clients</button>
+
+      <div class="stats-grid">
+        <div class="stat-card accent" style="animation-delay:0s"><div class="stat-label">Messages Used</div><div class="stat-value" id="statUsed">—</div><div class="stat-sub" id="statLimit">this month</div></div>
+        <div class="stat-card green" style="animation-delay:.08s"><div class="stat-label">Remaining</div><div class="stat-value" id="statRemaining">—</div><div class="stat-sub">messages left</div></div>
+        <div class="stat-card amber" style="animation-delay:.16s"><div class="stat-label">Resets</div><div class="stat-value" id="statReset" style="font-size:16px;padding-top:6px">—</div><div class="stat-sub">next reset</div></div>
+      </div>
+
+      <div class="usage-section">
+        <div class="section-header">
+          <div class="section-title">Usage</div>
+          <div class="usage-numbers"><strong id="usageNum">0</strong> / <span id="usageDen">0</span></div>
+        </div>
+        <div class="usage-track"><div class="usage-fill" id="usageFill" style="width:0%"></div></div>
+        <div class="usage-pct" id="usagePct">0%</div>
+      </div>
+
+      <!-- Admin-only status panel -->
+      <div id="adminStatusPanel" style="display:none;margin-bottom:20px">
+        <div class="status-grid">
+          <div class="status-item"><div class="status-item-label">PM2 Status</div><div class="status-item-value" id="pm2Status">—</div></div>
+          <div class="status-item"><div class="status-item-label">Package</div><div class="status-item-value" id="pkgLabel">—</div></div>
+          <div class="status-item"><div class="status-item-label">Restarts</div><div class="status-item-value" id="restartCount">—</div></div>
+          <div class="status-item"><div class="status-item-label">Active</div><div class="status-item-value" id="activeStatus">—</div></div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('prompt')">AI Prompt</button>
+        <button class="tab" onclick="switchTab('services')">Services</button>
+        <button class="tab" onclick="switchTab('hours')">Hours</button>
+      </div>
+
+      <!-- PROMPT TAB -->
+      <div class="panel active" id="panel-prompt">
+        <div id="prompt-view">
+          <div class="prompt-box" id="promptDisplay">Loading...</div>
+          <button class="btn-sm ghost" onclick="switchView('prompt-view','prompt-edit')">Edit AI Personality</button>
+        </div>
+        <div id="prompt-edit" style="display:none;margin-top:16px">
+          <div class="form-grid">
+            <div class="f-group"><label>Business Name</label><input type="text" id="f-businessName" placeholder="e.g. Sally's Nails"></div>
+            <div class="f-group"><label>Business Type</label><input type="text" id="f-businessType" placeholder="e.g. Nail Salon"></div>
+            <div class="f-group full"><label>Services & Pricing</label><textarea id="f-services" rows="3" placeholder="e.g. Manicure R350/45min, Pedicure R450/60min"></textarea></div>
+            <div class="f-group"><label>Target Audience</label><input type="text" id="f-targetAudience" placeholder="e.g. Women 25-45"></div>
+            <div class="f-group"><label>AI Tone</label><input type="text" id="f-tone" placeholder="e.g. Friendly, Professional"></div>
+            <div class="f-group"><label>Human Availability</label><input type="text" id="f-businessHours" placeholder="e.g. Mon-Fri 8am-5pm"></div>
+            <div class="f-group"><label>Location</label><input type="text" id="f-location" placeholder="e.g. Cape Town, SA"></div>
+            <div class="f-group full"><label>Common Questions</label><textarea id="f-commonQuestions" rows="2" placeholder="e.g. Pricing, booking, cancellations"></textarea></div>
+            <div class="f-group full"><label>Special Instructions</label><textarea id="f-specialInstructions" rows="2" placeholder="e.g. Always mention loyalty program"></textarea></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-sm primary" onclick="savePrompt()">Generate & Save</button>
+            <button class="btn-sm ghost" onclick="switchView('prompt-edit','prompt-view')">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICES TAB -->
+      <div class="panel" id="panel-services">
+        <div class="service-header"><span>Service Name</span><span>Duration (min)</span><span>Price (R)</span><span></span></div>
+        <div class="services-list" id="servicesList"></div>
+        <button class="add-btn" onclick="addService()">+ Add Service</button>
+        <div class="btn-row"><button class="btn-sm primary" onclick="saveServices()">Save Services</button></div>
+      </div>
+
+      <!-- HOURS TAB -->
+      <div class="panel" id="panel-hours">
+        <div class="hours-grid" id="hoursGrid"></div>
+        <div class="btn-row" style="margin-top:18px"><button class="btn-sm primary" onclick="saveHours()">Save Hours</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING + TOAST -->
+<div class="loading-overlay" id="loadingOverlay"><div style="text-align:center"><div class="spinner"></div><div class="loading-text" id="loadingText">Loading...</div></div></div>
+<div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+// ══ STATE ══
+const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+let MODE = 'client';     // 'client' or 'admin'
+let IS_ADMIN = false;
+let CLIENT = '';         // current client being viewed
+const ADMIN_PASSWORD = 'admin2024!'; // change this to your preferred admin password
+
+// ══ INIT ══
+window.onload = function() {
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  const slug = parts[parts.length - 1];
+  if (slug && slug !== 'dashboard') {
+    document.getElementById('clientInput').value = slug;
+    CLIENT = slug;
+  }
+};
+
+// ══ LOGIN MODE TOGGLE ══
+function setMode(mode) {
+  MODE = mode;
+  document.getElementById('modeClientBtn').classList.toggle('active', mode === 'client');
+  document.getElementById('modeAdminBtn').classList.toggle('active', mode === 'admin');
+  document.getElementById('clientFields').style.display = mode === 'client' ? 'block' : 'none';
+  const btn = document.getElementById('loginBtn');
+  btn.className = 'btn-primary' + (mode === 'admin' ? ' gold' : '');
+  btn.textContent = mode === 'admin' ? 'Admin Sign In' : 'Sign In';
+  document.getElementById('loginErr').style.display = 'none';
+}
+
+// ══ LOGIN ══
+async function doLogin() {
+  const pass = document.getElementById('passInput').value;
+  const err = document.getElementById('loginErr');
+  const btn = document.getElementById('loginBtn');
+  err.style.display = 'none';
+
+  if (MODE === 'admin') {
+    // Admin: check against hardcoded admin password (or env-based via API)
+    btn.disabled = true; btn.textContent = 'Verifying...';
+    try {
+      const r = await post('/admin-login', { password: pass });
+      if (r.success) {
+        IS_ADMIN = true;
+        showAdminDashboard();
+      } else {
+        err.textContent = 'Invalid admin password'; err.style.display = 'block';
+      }
+    } catch(e) {
+      // Fallback: compare client-side (set ADMIN_PASSWORD above)
+      if (pass === ADMIN_PASSWORD) {
+        IS_ADMIN = true;
+        showAdminDashboard();
+      } else {
+        err.textContent = 'Invalid admin password'; err.style.display = 'block';
+      }
+    }
+    btn.disabled = false; btn.textContent = 'Admin Sign In';
+    return;
+  }
+
+  // Client login
+  const name = document.getElementById('clientInput').value.trim();
+  if (!name || !pass) { err.textContent = 'Enter your client ID and password.'; err.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  try {
+    const r = await post('/client-login', { clientName: name, password: pass });
+    if (r.success) {
+      IS_ADMIN = false;
+      CLIENT = name;
+      showClientDashboard(name, false);
+    } else {
+      err.textContent = r.message || 'Invalid credentials'; err.style.display = 'block';
+    }
+  } catch(e) { err.textContent = 'Connection failed. Try again.'; err.style.display = 'block'; }
+  btn.disabled = false; btn.textContent = 'Sign In';
+}
+
+// ══ LOGOUT ══
+function doLogout() {
+  IS_ADMIN = false; CLIENT = '';
+  document.getElementById('appShell').style.display = 'none';
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('passInput').value = '';
+  document.getElementById('loginErr').style.display = 'none';
+}
+
+// ══ ADMIN DASHBOARD ══
+async function showAdminDashboard() {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('appShell').style.display = 'block';
+  document.getElementById('adminBadge').style.display = 'inline-block';
+  document.getElementById('clientPill').style.display = 'none';
+  document.getElementById('adminView').style.display = 'block';
+  document.getElementById('clientView').style.display = 'none';
+  await loadAdminClientList();
+}
+
+async function loadAdminClientList() {
+  try {
+    const clients = await get('/clients');
+    const online = clients.filter(function(c) { return c.pm2Status === 'online'; });
+    const p1 = clients.filter(function(c) { return c.packageType === 'pack1'; });
+    const p2 = clients.filter(function(c) { return c.packageType === 'pack2'; });
+    const revenue = (p1.length * 499) + (p2.length * 899);
+
+    document.getElementById('sumTotal').textContent = clients.length;
+    document.getElementById('sumOnline').textContent = online.length;
+    document.getElementById('sumP1').textContent = p1.length;
+    document.getElementById('sumP2').textContent = p2.length;
+    document.getElementById('adminRevenue').textContent = 'R' + revenue.toLocaleString();
+    document.getElementById('adminSubtitle').textContent = clients.length + ' client' + (clients.length !== 1 ? 's' : '') + ' · ' + online.length + ' online';
+
+    const grid = document.getElementById('clientsGrid');
+    if (!clients.length) {
+      grid.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px">No clients yet</div>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    clients.forEach(function(c) {
+      const pct = c.messageLimit > 0 ? Math.min(Math.round((c.messagesUsed / c.messageLimit) * 100), 100) : 0;
+      const fillClass = pct >= 90 ? 'danger' : pct >= 75 ? 'warn' : '';
+      const card = document.createElement('div');
+      card.className = 'client-card ' + (c.pm2Status === 'online' ? 'online' : 'offline');
+      card.innerHTML =
+        '<div>' +
+          '<div class="cc-name">' +
+            (c.pm2Status === 'online' ? '🟢' : '🔴') + ' ' + c.name +
+            '<span class="cc-pack ' + (c.packageType === 'pack2' ? 'p2' : 'p1') + '">' + (c.packageType === 'pack2' ? 'Pack 2' : 'Pack 1') + '</span>' +
+          '</div>' +
+          '<div class="cc-meta">' + c.messagesUsed.toLocaleString() + ' / ' + c.messageLimit.toLocaleString() + ' msgs · ' + (c.packageType === 'pack2' ? 'R899' : 'R499') + '/mo</div>' +
+        '</div>' +
+        '<div class="usage-mini">' +
+          '<div class="usage-mini-bar"><div class="usage-mini-fill ' + fillClass + '" style="width:' + pct + '%"></div></div>' +
+          '<div class="usage-mini-pct">' + pct + '%</div>' +
+        '</div>' +
+        '<button class="view-btn" onclick="adminViewClient(\'' + c.name + '\')">View →</button>';
+      grid.appendChild(card);
+    });
+  } catch(e) {
+    document.getElementById('clientsGrid').innerHTML = '<div style="color:var(--red);padding:20px">Failed to load clients: ' + e.message + '</div>';
+  }
+}
+
+async function adminViewClient(name) {
+  CLIENT = name;
+  document.getElementById('adminView').style.display = 'none';
+  document.getElementById('clientPill').style.display = 'inline-block';
+  document.getElementById('clientLabel').textContent = name;
+  document.getElementById('backBtn').style.display = 'inline-flex';
+  document.getElementById('adminStatusPanel').style.display = 'block';
+  await showClientDashboard(name, true);
+}
+
+function goBackToAdmin() {
+  document.getElementById('clientView').style.display = 'none';
+  document.getElementById('adminView').style.display = 'block';
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('clientPill').style.display = 'none';
+  document.getElementById('adminStatusPanel').style.display = 'none';
+  loadAdminClientList();
+}
+
+// ══ CLIENT DASHBOARD ══
+async function showClientDashboard(name, isAdminViewing) {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('appShell').style.display = 'block';
+  document.getElementById('clientView').style.display = 'block';
+
+  if (!isAdminViewing) {
+    document.getElementById('adminBadge').style.display = 'none';
+    document.getElementById('clientPill').style.display = 'inline-block';
+    document.getElementById('clientLabel').textContent = name;
+    document.getElementById('adminView').style.display = 'none';
+    document.getElementById('backBtn').style.display = 'none';
+    document.getElementById('adminStatusPanel').style.display = 'none';
+  }
+
+  await Promise.all([loadUsage(name), loadPrompt(name), loadServices(name), loadHours(name)]);
+
+  if (isAdminViewing) {
+    try {
+      const s = await get('/client/' + name + '/status');
+      const pm2El = document.getElementById('pm2Status');
+      pm2El.textContent = s.pm2Status || '—';
+      pm2El.className = 'status-item-value ' + (s.pm2Status === 'online' ? 'status-online' : 'status-offline');
+      document.getElementById('pkgLabel').textContent = s.packageLabel || s.packageType || '—';
+      document.getElementById('restartCount').textContent = s.restarts || '0';
+      document.getElementById('activeStatus').textContent = s.isActive ? 'Yes' : 'No';
+    } catch(e) {}
+  }
+}
+
+// ══ DATA LOADERS ══
+async function loadUsage(name) {
+  try {
+    const d = await get('/client/' + name + '/usage');
+    if (!d.success) return;
+    const pct = Math.min(Math.round((d.current / d.limit) * 100), 100);
+    document.getElementById('statUsed').textContent = d.current.toLocaleString();
+    document.getElementById('statLimit').textContent = 'of ' + d.limit.toLocaleString() + '/mo';
+    document.getElementById('statRemaining').textContent = (d.limit - d.current).toLocaleString();
+    document.getElementById('statReset').textContent = d.resetDate || '—';
+    document.getElementById('usageNum').textContent = d.current.toLocaleString();
+    document.getElementById('usageDen').textContent = d.limit.toLocaleString();
+    document.getElementById('usagePct').textContent = pct + '%';
+    const fill = document.getElementById('usageFill');
+    setTimeout(function() { fill.style.width = pct + '%'; }, 100);
+    fill.className = 'usage-fill' + (pct >= 90 ? ' danger' : pct >= 75 ? ' warn' : '');
+  } catch(e) {}
+}
+
+async function loadPrompt(name) {
+  try {
+    const d = await get('/get-prompt/' + name);
+    if (d.success && d.prompt) {
+      document.getElementById('promptDisplay').textContent = d.prompt;
+      if (d.metadata) {
+        ['businessName','businessType','services','targetAudience','tone','businessHours','location','commonQuestions','specialInstructions'].forEach(function(k) {
+          const el = document.getElementById('f-' + k);
+          if (el) el.value = d.metadata[k] || '';
+        });
+      }
+    } else {
+      document.getElementById('promptDisplay').textContent = 'No AI prompt yet.\n\nClick "Edit AI Personality" to create one.';
+    }
+  } catch(e) {}
+}
+
+async function loadServices(name) {
+  try {
+    const d = await get('/client/' + name + '/services');
+    const list = document.getElementById('servicesList');
+    list.innerHTML = '';
+    if (d.success && d.services && d.services.length) {
+      d.services.forEach(function(s) { addServiceRow(s.name, s.duration, s.price); });
+    }
+  } catch(e) {}
+}
+
+async function loadHours(name) {
+  const grid = document.getElementById('hoursGrid');
+  grid.innerHTML = '';
+  try {
+    const d = await get('/client/' + name + '/hours');
+    const map = {};
+    if (d.success && d.hours) d.hours.forEach(function(h) { map[h.day_of_week] = h; });
+    DAYS.forEach(function(day) {
+      const h = map[day] || { is_closed: day === 'saturday' || day === 'sunday', open_time: '08:00', close_time: '17:00' };
+      grid.appendChild(buildHourRow(day, h));
+    });
+  } catch(e) {
+    DAYS.forEach(function(day) {
+      grid.appendChild(buildHourRow(day, { is_closed: day === 'saturday' || day === 'sunday', open_time: '08:00', close_time: '17:00' }));
+    });
+  }
+}
+
+// ══ PROMPT ══
+function switchView(hideId, showId) {
+  document.getElementById(hideId).style.display = 'none';
+  document.getElementById(showId).style.display = 'block';
+}
+
+async function savePrompt() {
+  const data = {
+    clientName: CLIENT,
+    businessName: val('f-businessName'), businessType: val('f-businessType'),
+    services: val('f-services'), targetAudience: val('f-targetAudience'),
+    tone: val('f-tone'), businessHours: val('f-businessHours'),
+    location: val('f-location'), commonQuestions: val('f-commonQuestions'),
+    specialInstructions: val('f-specialInstructions')
+  };
+  showLoading('Generating AI prompt... (~30 seconds)');
+  try {
+    const r = await post('/generate-prompt', data);
+    if (r.success) {
+      document.getElementById('promptDisplay').textContent = r.prompt;
+      switchView('prompt-edit', 'prompt-view');
+      toast('AI prompt updated', 'success');
+    } else { toast('Failed: ' + (r.error || 'Unknown'), 'error'); }
+  } catch(e) { toast('Save failed', 'error'); }
+  hideLoading();
+}
+
+// ══ SERVICES ══
+function addServiceRow(name, duration, price) {
+  const row = document.createElement('div');
+  row.className = 'service-row';
+  row.innerHTML =
+    '<input type="text" placeholder="Service name" value="' + esc(name||'') + '">' +
+    '<input type="number" placeholder="60" min="5" max="480" value="' + (duration||'') + '">' +
+    '<input type="number" placeholder="0" min="0" value="' + (price||'') + '">' +
+    '<button class="del-btn" onclick="this.closest(\'.service-row\').remove()">×</button>';
+  document.getElementById('servicesList').appendChild(row);
+}
+function addService() { addServiceRow('','',''); }
+
+async function saveServices() {
+  const rows = document.querySelectorAll('.service-row');
+  const services = [];
+  let valid = true;
+  rows.forEach(function(row) {
+    const inputs = row.querySelectorAll('input');
+    const name = inputs[0].value.trim();
+    const duration = parseInt(inputs[1].value);
+    const price = parseFloat(inputs[2].value);
+    if (name && !isNaN(duration) && !isNaN(price)) { services.push({ name, duration, price }); }
+    else if (name) { valid = false; }
+  });
+  if (!valid) { toast('Fill in all fields for each service', 'error'); return; }
+  if (!services.length) { toast('Add at least one service', 'error'); return; }
+  showLoading('Saving services...');
+  try {
+    const r = await post('/setup-services', { clientName: CLIENT, services });
+    r.success ? toast(services.length + ' services saved', 'success') : toast('Failed: ' + r.error, 'error');
+  } catch(e) { toast('Save failed', 'error'); }
+  hideLoading();
+}
+
+// ══ HOURS ══
+function buildHourRow(day, data) {
+  const row = document.createElement('div');
+  row.className = 'hour-row';
+  row.dataset.day = day;
+  const isClosed = data.is_closed;
+  row.innerHTML =
+    '<div class="hour-day">' + day.substring(0,3).toUpperCase() + '</div>' +
+    '<input type="time" class="hr-open" value="' + (data.open_time||'08:00') + '"' + (isClosed?' disabled':'') + '>' +
+    '<input type="time" class="hr-close" value="' + (data.close_time||'17:00') + '"' + (isClosed?' disabled':'') + '>' +
+    '<label class="closed-toggle">' +
+      '<div class="toggle-track' + (isClosed?' on':'') + '" onclick="toggleClosed(this)">' +
+        '<div class="toggle-thumb"></div>' +
+      '</div>' +
+      '<span class="toggle-label">' + (isClosed?'Closed':'Open') + '</span>' +
+    '</label>';
+  return row;
+}
+
+function toggleClosed(track) {
+  const isNowOn = !track.classList.contains('on');
+  track.classList.toggle('on', isNowOn);
+  const row = track.closest('.hour-row');
+  track.nextElementSibling.textContent = isNowOn ? 'Closed' : 'Open';
+  row.querySelectorAll('input[type="time"]').forEach(function(i) { i.disabled = isNowOn; });
+}
+
+async function saveHours() {
+  const hours = {};
+  document.querySelectorAll('.hour-row').forEach(function(row) {
+    const day = row.dataset.day;
+    const isClosed = row.querySelector('.toggle-track').classList.contains('on');
+    hours[day] = { is_closed: isClosed, open_time: isClosed ? null : row.querySelector('.hr-open').value, close_time: isClosed ? null : row.querySelector('.hr-close').value, breaks: [] };
+  });
+  showLoading('Saving hours...');
+  try {
+    const r = await post('/setup-hours', { clientName: CLIENT, hours });
+    r.success ? toast('Hours saved', 'success') : toast('Failed: ' + r.error, 'error');
+  } catch(e) { toast('Save failed', 'error'); }
+  hideLoading();
+}
+
+// ══ TABS ══
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(function(t, i) {
+    t.classList.toggle('active', ['prompt','services','hours'][i] === name);
+  });
+  document.querySelectorAll('.panel').forEach(function(p) {
+    p.classList.toggle('active', p.id === 'panel-' + name);
+  });
+}
+
+// ══ UTILS ══
+function val(id) { return (document.getElementById(id)||{}).value||''; }
+function esc(s) { return String(s).replace(/"/g,'&quot;'); }
+
+// API key sent with every request so requireKey middleware lets them through
+const API_KEY = 'BtradersSecret2024!';
+
+async function get(url) {
+  try {
+    const r = await fetch(url, { headers: { 'x-api-key': API_KEY } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  } catch(e) {
+    console.error('GET failed:', url, e.message);
+    return { success: false, error: e.message };
+  }
+}
+
+async function post(url, data) {
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+      body: JSON.stringify(data)
+    });
+    if (!r.ok && r.status !== 400) throw new Error('HTTP ' + r.status);
+    return r.json();
+  } catch(e) {
+    console.error('POST failed:', url, e.message);
+    return { success: false, error: e.message };
+  }
+}
+
+function showLoading(text) { document.getElementById('loadingText').textContent = text||'Loading...'; document.getElementById('loadingOverlay').classList.add('show'); }
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = (type === 'success' ? '✓  ' : '✕  ') + msg;
+  t.className = 'toast ' + (type||'') + ' show';
+  setTimeout(function() { t.classList.remove('show'); }, 3500);
+}
+</script>
+</body>
+</html>

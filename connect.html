@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect WhatsApp — LaafConnect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #080c14;
+  --surface:   #0d1525;
+  --card:      #111928;
+  --card2:     #17223a;
+  --border:    rgba(99,120,180,0.14);
+  --border2:   rgba(99,120,180,0.26);
+  --text:      #e8edf8;
+  --muted:     #7a8aa8;
+  --muted2:    #3a4a68;
+  --blue:      #3b6fff;
+  --blue-dim:  rgba(59,111,255,0.10);
+  --blue-glow: rgba(59,111,255,0.25);
+  --indigo:    #6366f1;
+  --green:     #10d98a;
+  --green-dim: rgba(16,217,138,0.10);
+  --gold:      #f0a500;
+  --gold-dim:  rgba(240,165,0,0.10);
+  --red:       #ff4d6a;
+  --orange:    #f97316;
+  --orange-dim:rgba(249,115,22,0.12);
+  --serif:     'Instrument Serif', Georgia, serif;
+  --sans:      'Outfit', sans-serif;
+  --r:         10px;
+  --r-lg:      16px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
+
+/* VIDEO BG */
+.bg-video-wrap{position:fixed;inset:0;z-index:0}
+.bg-video-wrap video{width:100%;height:100%;object-fit:cover}
+.bg-video-wrap::after{content:'';position:absolute;inset:0;background:rgba(8,12,20,0.72)}
+
+/* NAV */
+nav{position:relative;z-index:10;height:66px;display:flex;align-items:center;justify-content:center;padding:0 24px;background:rgba(8,12,20,0.72);backdrop-filter:blur(18px);border-bottom:1px solid rgba(99,120,180,0.10)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-img{width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 0 18px var(--blue-glow);flex-shrink:0}
+.logo-text{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.logo-text span{color:var(--blue)}
+
+/* PAGE LAYOUT */
+.page{position:relative;z-index:1;flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;min-height:calc(100vh - 66px)}
+
+/* CARD */
+.card{background:rgba(17,25,40,0.85);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:22px;padding:46px;max-width:480px;width:100%;position:relative;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.55)}
+.card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+
+/* STATE SECTIONS */
+.state{display:none}
+.state.active{display:block}
+
+/* ── LOADING STATE ── */
+#state-loading{text-align:center;padding:12px 0}
+.loading-dots{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px}
+.loading-dot{width:10px;height:10px;border-radius:50%;background:var(--blue);animation:typingBounce 1.2s infinite}
+.loading-dot:nth-child(2){animation-delay:.2s}
+.loading-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-7px);opacity:1}}
+.loading-title{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--text);margin-bottom:10px}
+.loading-sub{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* ── QR READY STATE ── */
+#state-qr-ready{text-align:center}
+.qr-heading{font-family:var(--serif);font-style:italic;font-size:26px;color:var(--text);margin-bottom:10px}
+.qr-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.qr-container{background:#fff;border-radius:16px;padding:16px;display:inline-block;margin-bottom:22px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.qr-container img{display:block;width:200px;height:200px;border-radius:8px}
+.countdown-wrap{margin-bottom:12px}
+.countdown-bar-bg{height:4px;background:var(--card2);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.countdown-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--indigo));border-radius:4px;width:100%;transition:width 1s linear}
+.countdown-text{font-size:11px;color:var(--muted);text-align:center}
+.qr-refresh-note{font-size:12px;color:var(--muted2)}
+
+/* ── WAITING STATE ── */
+#state-waiting{text-align:center;padding:12px 0}
+.waiting-dots{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px}
+.waiting-dot{width:10px;height:10px;border-radius:50%;background:var(--green);animation:typingBounce 1.2s infinite}
+.waiting-dot:nth-child(2){animation-delay:.2s}
+.waiting-dot:nth-child(3){animation-delay:.4s}
+.waiting-title{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--text);margin-bottom:10px}
+.waiting-sub{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* ── CONNECTED STATE ── */
+#state-connected{text-align:center;padding:8px 0}
+.check-icon{width:72px;height:72px;border-radius:50%;background:var(--green-dim);border:2px solid rgba(16,217,138,.3);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 22px;animation:scaleIn .5s ease forwards;transform:scale(0)}
+@keyframes scaleIn{from{transform:scale(0);opacity:0}70%{transform:scale(1.1)}to{transform:scale(1);opacity:1}}
+.connected-title{font-family:var(--serif);font-style:italic;font-size:28px;color:var(--text);margin-bottom:10px}
+.connected-sub{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:28px}
+.btn-primary{display:inline-block;width:100%;padding:13px 22px;background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff;border:none;border-radius:var(--r);font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px var(--blue-glow);transition:all .2s;text-decoration:none;text-align:center;margin-bottom:10px}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px var(--blue-glow)}
+.btn-ghost{display:inline-block;width:100%;padding:12px 22px;background:rgba(255,255,255,.06);border:1px solid var(--border2);border-radius:var(--r);color:var(--muted);font-family:var(--sans);font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s}
+.btn-ghost:hover{background:rgba(255,255,255,.10);color:var(--text);border-color:rgba(255,255,255,.22)}
+
+/* ── TRIAL EXPIRED STATE ── */
+#state-trial-expired{text-align:center;padding:8px 0}
+.warn-icon{width:64px;height:64px;border-radius:50%;background:var(--orange-dim);border:2px solid rgba(249,115,22,.3);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 22px}
+.expired-title{font-family:var(--serif);font-style:italic;font-size:26px;color:var(--text);margin-bottom:10px}
+.expired-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:28px}
+.btn-gold{display:inline-block;width:100%;padding:13px 22px;background:linear-gradient(135deg,var(--gold),#d4880a);color:#fff;border:none;border-radius:var(--r);font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(240,165,0,.25);transition:all .2s;text-decoration:none;text-align:center}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(240,165,0,.35)}
+
+/* ── NOT FOUND STATE ── */
+#state-not-found{text-align:center;padding:8px 0}
+.error-icon{width:64px;height:64px;border-radius:50%;background:rgba(255,77,106,.10);border:2px solid rgba(255,77,106,.25);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 22px}
+.notfound-title{font-family:var(--serif);font-style:italic;font-size:26px;color:var(--text);margin-bottom:10px}
+.notfound-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:28px}
+
+/* TRIAL PILL */
+.trial-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(16,217,138,.08);border:1px solid rgba(16,217,138,.2);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--green);margin-bottom:28px}
+.trial-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* STEP INSTRUCTIONS */
+.steps-list{text-align:left;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-top:20px}
+.steps-list-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.step-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:6px}
+.step-item:last-child{margin-bottom:0}
+.step-num{width:20px;height:20px;border-radius:50%;background:var(--blue-dim);border:1px solid rgba(59,111,255,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--blue);flex-shrink:0;margin-top:1px}
+
+/* RESPONSIVE */
+@media(max-width:540px){
+  .card{padding:28px 20px;border-radius:18px}
+  .qr-heading{font-size:22px}
+  .connected-title,.expired-title,.notfound-title{font-size:22px}
+  .qr-container img{width:170px;height:170px}
+}
+</style>
+</head>
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<div class="bg-video-wrap">
+  <video autoplay muted loop playsinline>
+    <source src="views.mp4" type="video/mp4">
+  </video>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="https://register.laafstyl.org" class="nav-logo">
+    <img src="logo.png" class="logo-img" alt="LaafConnect logo">
+    <span class="logo-text">Laaf<span>Connect</span></span>
+  </a>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+  <div class="card">
+
+    <!-- LOADING -->
+    <div class="state active" id="state-loading">
+      <div class="loading-dots">
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+      </div>
+      <div class="loading-title">Setting up your AI assistant…</div>
+      <div class="loading-sub">Your WhatsApp bot is starting up.<br>This usually takes less than 30 seconds.</div>
+    </div>
+
+    <!-- QR READY -->
+    <div class="state" id="state-qr-ready">
+      <div class="qr-heading">Scan to connect WhatsApp</div>
+      <div class="qr-sub">Open WhatsApp &rarr; More Options (⋮) &rarr; Linked Devices &rarr; Link a Device</div>
+      <div class="qr-container">
+        <img id="qr-image" src="" alt="QR Code">
+      </div>
+      <div class="countdown-wrap">
+        <div class="countdown-bar-bg">
+          <div class="countdown-bar" id="countdown-bar"></div>
+        </div>
+        <div class="countdown-text" id="countdown-text">Refreshes in 20s</div>
+      </div>
+      <div class="qr-refresh-note">QR refreshes automatically every 20 seconds</div>
+      <div class="steps-list">
+        <div class="steps-list-title">How to scan</div>
+        <div class="step-item"><div class="step-num">1</div><span>Open WhatsApp on your phone</span></div>
+        <div class="step-item"><div class="step-num">2</div><span>Tap the three dots (⋮) or Settings</span></div>
+        <div class="step-item"><div class="step-num">3</div><span>Tap <strong>Linked Devices</strong></span></div>
+        <div class="step-item"><div class="step-num">4</div><span>Tap <strong>Link a Device</strong> and point at this QR</span></div>
+      </div>
+    </div>
+
+    <!-- WAITING / CONFIRMING -->
+    <div class="state" id="state-waiting">
+      <div class="waiting-dots">
+        <div class="waiting-dot"></div>
+        <div class="waiting-dot"></div>
+        <div class="waiting-dot"></div>
+      </div>
+      <div class="waiting-title">Confirming your connection…</div>
+      <div class="waiting-sub">QR code scanned! Waiting for WhatsApp to confirm.<br>This takes just a moment.</div>
+    </div>
+
+    <!-- CONNECTED -->
+    <div class="state" id="state-connected">
+      <div class="check-icon" id="check-icon">✓</div>
+      <div class="trial-pill"><div class="trial-dot"></div><span id="trial-days-text">14-day free trial active</span></div>
+      <div class="connected-title">You're all set!</div>
+      <div class="connected-sub">Your WhatsApp AI assistant is now live and ready to answer messages for your customers — 24/7.</div>
+      <a class="btn-primary" id="btn-dashboard" href="#" target="_blank">Open Dashboard →</a>
+      <a class="btn-ghost" href="https://register.laafstyl.org">Back to Home</a>
+    </div>
+
+    <!-- TRIAL EXPIRED -->
+    <div class="state" id="state-trial-expired">
+      <div class="warn-icon">⚠️</div>
+      <div class="expired-title">Free trial ended</div>
+      <div class="expired-sub">Your 14-day free trial has ended. Upgrade to keep your AI assistant running and serving your customers.</div>
+      <a class="btn-gold" href="https://register.laafstyl.org/#packages">View Plans →</a>
+    </div>
+
+    <!-- NOT FOUND -->
+    <div class="state" id="state-not-found">
+      <div class="error-icon">🔍</div>
+      <div class="notfound-title">Page not found</div>
+      <div class="notfound-sub">This connect link is not recognised. Please check your email or sign up again to get a new link.</div>
+      <a class="btn-ghost" href="https://register.laafstyl.org">Back to Home</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  // ── Config ────────────────────────────────
+  var POLL_INTERVAL = 20000; // 20 seconds
+  var clientName = window.location.pathname.split('/').pop() || '';
+  var pollTimer = null;
+  var countdownTimer = null;
+  var countdownSeconds = 20;
+  var lastStatus = null;
+  var qrScanned = false; // tracks if QR was scanned but not yet confirmed
+
+  // ── State management ──────────────────────
+  var states = ['loading', 'qr-ready', 'waiting', 'connected', 'trial-expired', 'not-found'];
+
+  function showState(name) {
+    states.forEach(function(s) {
+      var el = document.getElementById('state-' + s);
+      if (el) el.classList.toggle('active', s === name);
+    });
+  }
+
+  // ── Countdown bar ─────────────────────────
+  function startCountdown() {
+    stopCountdown();
+    countdownSeconds = 20;
+    updateCountdownUI();
+    countdownTimer = setInterval(function() {
+      countdownSeconds--;
+      updateCountdownUI();
+      if (countdownSeconds <= 0) stopCountdown();
+    }, 1000);
+  }
+
+  function stopCountdown() {
+    if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+  }
+
+  function updateCountdownUI() {
+    var bar = document.getElementById('countdown-bar');
+    var text = document.getElementById('countdown-text');
+    if (bar) bar.style.width = (countdownSeconds / 20 * 100) + '%';
+    if (text) text.textContent = 'Refreshes in ' + countdownSeconds + 's';
+  }
+
+  // ── Render state from API response ────────
+  function renderState(data) {
+    var status = data.status;
+
+    // If we showed QR before and now status is unknown/loading again,
+    // it might mean the QR was just scanned — show "waiting" briefly
+    if (qrScanned && status === 'loading') {
+      showState('waiting');
+      return;
+    }
+
+    if (status === 'connected') {
+      stopCountdown();
+      clearPoll();
+      showState('connected');
+
+      // Reset check-icon animation by removing and re-adding it
+      var icon = document.getElementById('check-icon');
+      if (icon) {
+        icon.style.animation = 'none';
+        void icon.offsetWidth; // force reflow
+        icon.style.animation = '';
+      }
+
+      // Trial days pill
+      if (data.trialDaysLeft !== null && data.trialDaysLeft !== undefined) {
+        var daysEl = document.getElementById('trial-days-text');
+        if (daysEl) {
+          if (data.trialDaysLeft <= 0) {
+            daysEl.textContent = 'Trial ends today';
+          } else if (data.trialDaysLeft === 1) {
+            daysEl.textContent = '1 day left in free trial';
+          } else {
+            daysEl.textContent = data.trialDaysLeft + '-day free trial active';
+          }
+        }
+      }
+
+      // Dashboard button
+      var dashBtn = document.getElementById('btn-dashboard');
+      if (dashBtn && data.clientName) {
+        dashBtn.href = '/client/' + data.clientName;
+      }
+
+    } else if (status === 'qr_ready') {
+      qrScanned = false;
+      showState('qr-ready');
+
+      var img = document.getElementById('qr-image');
+      if (img && data.qrImage) {
+        img.src = data.qrImage;
+        // When image loads, user may scan — detect next poll where QR disappears
+        img.onload = function() {
+          qrScanned = false;
+        };
+      }
+
+      startCountdown();
+
+    } else if (status === 'loading') {
+      showState('loading');
+
+    } else if (status === 'trial_expired') {
+      clearPoll();
+      stopCountdown();
+      showState('trial-expired');
+
+    } else if (status === 'not_found') {
+      clearPoll();
+      stopCountdown();
+      showState('not-found');
+
+    } else {
+      // Unknown / error — show loading as fallback
+      showState('loading');
+    }
+
+    lastStatus = status;
+  }
+
+  // ── Fetch status ──────────────────────────
+  function fetchStatus() {
+    if (!clientName) { renderState({ status: 'not_found' }); return; }
+
+    fetch('/client/' + encodeURIComponent(clientName) + '/qr-status')
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        // If we had QR and now it's gone but not yet connected → waiting
+        if (lastStatus === 'qr_ready' && data.status === 'loading') {
+          qrScanned = true;
+        }
+        renderState(data);
+      })
+      .catch(function() {
+        // On error keep showing whatever was last shown
+      });
+  }
+
+  // ── Polling ───────────────────────────────
+  function startPoll() {
+    clearPoll();
+    pollTimer = setInterval(function() {
+      fetchStatus();
+      startCountdown();
+    }, POLL_INTERVAL);
+  }
+
+  function clearPoll() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  }
+
+  // ── Boot ──────────────────────────────────
+  if (!clientName) {
+    renderState({ status: 'not_found' });
+  } else {
+    fetchStatus();
+    startPoll();
+  }
+
+})();
+</script>
+</body>
+</html>

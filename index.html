@@ -1,34 +1,743 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LaafConnect — WhatsApp AI for SA Businesses</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #0099ff 0%, #0077cc 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .container { max-width: 600px; background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 40px; text-align: center; }
-    h1 { color: #0077cc; margin-bottom: 10px; font-size: 32px; }
-    p { color: #555; margin-bottom: 20px; line-height: 1.6; }
-    .cta { background: #0099ff; color: white; padding: 14px 32px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; }
-    .cta:hover { background: #0077cc; }
-    .features { text-align: left; margin: 30px 0; }
-    .features li { margin: 10px 0; color: #666; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaafConnect — WhatsApp AI for South African Businesses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #080c14;
+  --surface:   #0d1525;
+  --card:      #111928;
+  --card2:     #17223a;
+  --border:    rgba(99,120,180,0.14);
+  --border2:   rgba(99,120,180,0.26);
+  --text:      #e8edf8;
+  --muted:     #7a8aa8;
+  --muted2:    #3a4a68;
+  --blue:      #3b6fff;
+  --blue-dim:  rgba(59,111,255,0.10);
+  --blue-glow: rgba(59,111,255,0.25);
+  --indigo:    #6366f1;
+  --green:     #10d98a;
+  --green-dim: rgba(16,217,138,0.10);
+  --gold:      #f0a500;
+  --gold-dim:  rgba(240,165,0,0.10);
+  --gold-glow: rgba(240,165,0,0.22);
+  --red:       #ff4d6a;
+  --serif:     'Instrument Serif', Georgia, serif;
+  --sans:      'Outfit', sans-serif;
+  --r:         10px;
+  --r-lg:      16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;background:rgba(8,12,20,0.72);backdrop-filter:blur(18px);border-bottom:1px solid rgba(99,120,180,0.10);transition:background .3s}
+nav.scrolled{background:rgba(8,12,20,0.96)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-img{width:34px;height:34px;border-radius:9px;object-fit:contain;box-shadow:0 0 18px var(--blue-glow);flex-shrink:0}
+.logo-text{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.logo-text span{color:var(--blue)}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-link{font-size:13px;font-weight:500;color:rgba(232,237,248,.78);text-decoration:none;padding:7px 14px;border-radius:8px;transition:background .2s,color .2s}
+.nav-link:hover{background:var(--blue-dim);color:var(--text)}
+.nav-cta{background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff;border:none;border-radius:8px;padding:9px 22px;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px var(--blue-glow);transition:all .2s;text-decoration:none;margin-left:8px}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 26px var(--blue-glow)}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:120px 48px 80px}
+.hero-video-wrap{position:absolute;inset:0;z-index:0}
+.hero-video-wrap video{width:100%;height:100%;object-fit:cover;object-position:center}
+.hero-video-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,20,.65) 0%,rgba(8,12,20,.48) 40%,rgba(8,12,20,.82) 100%)}
+.hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr 430px;gap:64px;align-items:center;max-width:1120px;width:100%;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(20,29,46,.78);border:1px solid var(--border2);backdrop-filter:blur(8px);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--blue);margin-bottom:28px;opacity:0;animation:fadeUp .7s .1s ease forwards}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-text h1{font-family:var(--serif);font-size:clamp(34px,4.4vw,58px);font-style:italic;line-height:1.12;color:#fff;margin-bottom:22px;text-shadow:0 2px 22px rgba(0,0,0,.5);opacity:0;animation:fadeUp .7s .2s ease forwards}
+.hero-text h1 em{background:linear-gradient(135deg,#6eb3ff,var(--indigo));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-text p{font-size:16px;line-height:1.75;color:rgba(232,237,248,.84);margin-bottom:36px;opacity:0;animation:fadeUp .7s .3s ease forwards}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fadeUp .7s .4s ease forwards}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff;border:none;border-radius:var(--r);padding:13px 30px;font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px var(--blue-glow);transition:all .2s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px var(--blue-glow)}
+.btn-ghost{background:rgba(255,255,255,.08);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:var(--r);padding:13px 26px;font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.btn-ghost:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.36)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* CHAT MOCKUP */
+.chat-mockup{opacity:0;animation:fadeUp .8s .55s ease forwards}
+.chat-phone{background:rgba(13,21,37,.85);backdrop-filter:blur(20px);border:1px solid rgba(99,120,180,.22);border-radius:24px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04)}
+.chat-topbar{background:#1a2a1a;padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.chat-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--green),#0ab870);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.chat-biz-name{font-size:14px;font-weight:700;color:#fff}
+.chat-online{font-size:11px;color:var(--green)}
+.chat-body{padding:16px;display:flex;flex-direction:column;gap:10px;min-height:300px;background:#0b1a0b;background-image:radial-gradient(rgba(255,255,255,.015) 1px,transparent 1px);background-size:20px 20px;overflow:hidden}
+.chat-msg{max-width:84%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.55;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+.chat-msg.visible{opacity:1;transform:none}
+.chat-msg.incoming{background:rgba(255,255,255,.09);color:#e8edf8;border-bottom-left-radius:4px;align-self:flex-start}
+.chat-msg.outgoing{background:linear-gradient(135deg,#1a3a6b,#1e2d5a);border:1px solid rgba(59,111,255,.25);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.chat-time{font-size:10px;color:rgba(255,255,255,.35);text-align:right;margin-top:3px}
+.chat-typing{display:flex;align-items:center;gap:4px;padding:9px 13px;background:rgba(255,255,255,.09);border-radius:12px;border-bottom-left-radius:4px;align-self:flex-start;opacity:0;transition:opacity .3s}
+.chat-typing.show{opacity:1}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:typingBounce 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.chat-lang-badge{align-self:center;font-size:10px;color:var(--blue);font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:var(--blue-dim);border:1px solid rgba(59,111,255,.2);opacity:0;transition:opacity .4s}
+.chat-lang-badge.visible{opacity:1}
+
+/* STATS */
+.stats-strip{position:relative;z-index:1;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:stretch;justify-content:center;flex-wrap:wrap}
+.stat-item{text-align:center;padding:30px 48px;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:var(--serif);font-style:italic;font-size:38px;color:var(--text);line-height:1;margin-bottom:5px}
+.stat-label{font-size:12px;color:var(--muted);font-weight:500}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:.08s}
+.reveal-delay-2{transition-delay:.16s}
+.reveal-delay-3{transition-delay:.24s}
+.reveal-delay-4{transition-delay:.32s}
+.reveal-delay-5{transition-delay:.40s}
+.no-js .reveal{opacity:1;transform:none}
+
+/* SECTIONS */
+.section{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:88px 40px}
+.section-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.section-title{font-family:var(--serif);font-style:italic;font-size:clamp(26px,4vw,42px);color:var(--text);margin-bottom:14px}
+.section-sub{font-size:15px;color:var(--muted);line-height:1.7;max-width:540px;margin-bottom:48px}
+
+/* LANGUAGE TICKER */
+.lang-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:80px 0;overflow:hidden}
+.lang-section-header{text-align:center;padding:0 40px 48px}
+.lang-section-header p{font-size:14px;color:var(--muted);max-width:500px;margin:0 auto;line-height:1.7}
+.ticker-wrap{overflow:hidden;position:relative}
+.ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none}
+.ticker-wrap::before{left:0;background:linear-gradient(90deg,var(--surface),transparent)}
+.ticker-wrap::after{right:0;background:linear-gradient(-90deg,var(--surface),transparent)}
+.ticker-track{display:flex;gap:12px;animation:tickerFwd 30s linear infinite;width:max-content;padding:0 6px;margin-bottom:12px}
+.ticker-track.reverse{animation:tickerRev 34s linear infinite}
+@keyframes tickerFwd{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes tickerRev{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.lang-pill{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px;flex-shrink:0;white-space:nowrap;transition:border-color .2s}
+.lang-pill:hover{border-color:var(--border2)}
+.lang-flag{font-size:20px}
+.lang-info{display:flex;flex-direction:column}
+.lang-name{font-size:13px;font-weight:700;color:var(--text)}
+.lang-native{font-size:11px;color:var(--muted)}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px;transition:border-color .2s,transform .2s}
+.feat-card:hover{border-color:var(--border2);transform:translateY(-3px)}
+.feat-icon{width:46px;height:46px;border-radius:12px;background:var(--blue-dim);border:1px solid rgba(59,111,255,.18);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:18px}
+.feat-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.feat-desc{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* HOW IT WORKS */
+.hiw-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.steps{display:flex;flex-direction:column}
+.step{display:grid;grid-template-columns:54px 1fr;gap:20px;padding:22px 0;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;left:26px;top:68px;width:2px;height:calc(100% - 44px);background:linear-gradient(180deg,var(--border2),transparent)}
+.step-num{width:54px;height:54px;border-radius:14px;background:var(--card);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-style:italic;font-size:22px;color:var(--blue);flex-shrink:0;z-index:1;box-shadow:0 0 24px rgba(59,111,255,.10)}
+.step-content{padding-top:13px}
+.step-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* PACKAGES */
+.packages-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:900px;margin:0 auto}
+@property --angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes rotateBorder{to{--angle:360deg}}
+.pkg-outer{border-radius:calc(var(--r-lg) + 2px);padding:2px;position:relative}
+.pkg-outer.plain{padding:0}
+.pkg-outer.glowing-blue{background:conic-gradient(from var(--angle,0deg),var(--blue) 0deg,var(--indigo) 80deg,transparent 150deg,transparent 280deg,var(--blue) 360deg);animation:rotateBorder 4s linear infinite}
+.pkg-outer.glowing-gold{background:conic-gradient(from var(--angle,0deg),var(--gold) 0deg,#e8c840 80deg,transparent 150deg,transparent 280deg,var(--gold) 360deg);animation:rotateBorder 5s linear infinite}
+.pkg-outer.webdev-outer{grid-column:1/-1}
+.pkg-card{background:var(--card);border-radius:var(--r-lg);padding:34px;position:relative;overflow:hidden;height:100%}
+.pkg-outer.plain .pkg-card{border:1px solid var(--border)}
+.pkg-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;padding:4px 12px;border-radius:6px;margin-bottom:16px}
+.pkg-tag.t-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(59,111,255,.22)}
+.pkg-tag.t-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(16,217,138,.25)}
+.pkg-tag.t-gold{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(240,165,0,.25)}
+.pkg-name{font-size:18px;font-weight:700;margin-bottom:6px}
+.pkg-price{font-family:var(--serif);font-style:italic;font-size:44px;color:var(--text);line-height:1;margin-bottom:4px}
+.pkg-price.c-gold{color:var(--gold)}
+.pkg-period{font-size:13px;color:var(--muted);margin-bottom:22px}
+.pkg-divider{height:1px;background:var(--border);margin-bottom:20px}
+.pkg-features{display:flex;flex-direction:column;gap:10px}
+.pkg-feature{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);line-height:1.55}
+.feat-check{width:18px;height:18px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:1px}
+.feat-check.c-blue{background:var(--blue-dim);color:var(--blue)}
+.feat-check.c-green{background:var(--green-dim);color:var(--green)}
+.feat-check.c-gold{background:var(--gold-dim);color:var(--gold)}
+.pkg-btn{width:100%;margin-top:24px;padding:12px;border-radius:var(--r);font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;border:none}
+.pkg-btn.outline{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.pkg-btn.outline:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+.pkg-btn.s-blue{background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff;box-shadow:0 4px 18px var(--blue-glow)}
+.pkg-btn.s-blue:hover{transform:translateY(-1px);box-shadow:0 8px 26px var(--blue-glow)}
+.pkg-btn.s-gold{background:linear-gradient(135deg,var(--gold),#d4880a);color:#fff;box-shadow:0 4px 18px var(--gold-glow)}
+.pkg-btn.s-gold:hover{transform:translateY(-1px);box-shadow:0 8px 26px var(--gold-glow)}
+.webdev-inner{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+
+/* REGISTER SECTION */
+.register-bg{position:relative;border-top:1px solid var(--border);padding:100px 40px;overflow:hidden}
+.register-video-wrap{position:absolute;inset:0;z-index:0}
+.register-video-wrap video{width:100%;height:100%;object-fit:cover;object-position:center}
+.register-video-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,20,.70) 0%,rgba(8,12,20,.55) 50%,rgba(8,12,20,.75) 100%)}
+.register-wrap{max-width:540px;margin:0 auto;position:relative;z-index:1}
+.register-card{background:rgba(17,25,40,0.85);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:22px;padding:46px;position:relative;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.55);margin-top:44px}
+.register-card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.form-opt{color:var(--muted2);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px}
+.form-input,.form-select{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;font-family:var(--sans);font-size:14px;color:var(--text);outline:none;transition:border-color .2s;appearance:none}
+.form-input::placeholder{color:var(--muted2)}
+.form-input:focus,.form-select:focus{border-color:var(--blue)}
+.form-input.error{border-color:var(--red)}
+.select-wrap{position:relative}
+.select-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:12px}
+.form-select option{background:var(--card2);color:var(--text)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-err{font-size:12px;color:var(--red);margin-top:5px;display:none}
+.btn-register{width:100%;padding:13px;border-radius:var(--r);background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff;border:none;font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px var(--blue-glow);transition:all .2s;margin-top:8px}
+.btn-register:hover{transform:translateY(-1px);box-shadow:0 10px 32px var(--blue-glow)}
+.btn-register:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.form-note{font-size:12px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.55}
+.form-note a{color:var(--blue);text-decoration:none}
+
+/* SUCCESS STATE */
+.form-success{display:none;text-align:center;padding:12px 0 4px}
+.success-icon{width:60px;height:60px;border-radius:50%;background:var(--green-dim);border:1px solid rgba(16,217,138,.28);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 18px}
+.success-title{font-family:var(--serif);font-style:italic;font-size:24px;margin-bottom:10px}
+.success-sub{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:22px}
+.success-email-note{font-size:12px;color:var(--muted);margin-bottom:24px;padding:10px 14px;background:var(--blue-dim);border:1px solid rgba(59,111,255,.18);border-radius:var(--r);line-height:1.6}
+.btn-connect{display:inline-block;width:100%;padding:13px;border-radius:var(--r);background:linear-gradient(135deg,var(--blue),var(--indigo));color:#fff;border:none;font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px var(--blue-glow);transition:all .2s;text-decoration:none;text-align:center;margin-bottom:10px}
+.btn-connect:hover{transform:translateY(-1px);box-shadow:0 10px 32px var(--blue-glow)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:relative;z-index:1;background:var(--bg)}
+.footer-copy{font-size:13px;color:var(--muted)}
+.footer-links{display:flex;gap:24px}
+.footer-link{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s}
+.footer-link:hover{color:var(--blue)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:12px 20px;font-size:13px;font-weight:500;transform:translateY(60px);opacity:0;transition:transform .3s,opacity .3s;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(16,217,138,.4);color:var(--green)}
+.toast.error{border-color:rgba(255,77,106,.4);color:var(--red)}
+
+/* RESPONSIVE */
+@media(max-width:1000px){.hero-inner{grid-template-columns:1fr}.chat-mockup{display:none}.hiw-grid{grid-template-columns:1fr;gap:48px}.features-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){nav{padding:0 20px}.nav-links .nav-link{display:none}.hero{padding:110px 20px 60px}.section{padding:60px 20px}.packages-grid{grid-template-columns:1fr}.pkg-outer.webdev-outer{grid-column:1}.webdev-inner{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.register-card{padding:28px 20px}footer{flex-direction:column;text-align:center;padding:24px 20px}}
+@media(max-width:540px){.features-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>🤖 LaafConnect</h1>
-    <p>AI-powered WhatsApp automation for South African SMEs</p>
-    <p>Support all 11 official languages. From R239/month.</p>
-    <ul class="features">
-      <li>✓ Instant customer responses 24/7</li>
-      <li>✓ Multilingual AI chatbots</li>
-      <li>✓ Lead capture & nurturing</li>
-      <li>✓ Easy setup, no coding</li>
-    </ul>
-    <a href="https://wa.me/27636691391?text=I%20want%20to%20learn%20about%20LaafConnect" class="cta">Start Free Trial</a>
-    <p style="margin-top: 30px; font-size: 14px; color: #999;">Or WhatsApp: <strong>063 669 1391</strong></p>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img src="logo.png" class="logo-img" alt="LaafConnect logo">
+    <span class="logo-text">Laaf<span>Connect</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="#features"     class="nav-link">Features</a>
+    <a href="#languages"    class="nav-link">Languages</a>
+    <a href="#packages"     class="nav-link">Pricing</a>
+    <a href="#how-it-works" class="nav-link">How It Works</a>
+    <a href="#get-started"  class="nav-cta">Get Started</a>
   </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-video-wrap">
+    <video autoplay muted loop playsinline>
+      <source src="site-video.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge"><div class="badge-dot"></div>Built for South African businesses</div>
+      <h1>Your business,<br><em>always answering</em></h1>
+      <p>LaafConnect puts an AI assistant on your WhatsApp — handling enquiries, booking appointments, and replying in all 11 official SA languages, 24 hours a day.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="goto('get-started')">Get started today</button>
+        <a href="#packages" class="btn-ghost">See pricing</a>
+      </div>
+    </div>
+    <div class="chat-mockup">
+      <div class="chat-phone">
+        <div class="chat-topbar">
+          <div class="chat-avatar">🤖</div>
+          <div>
+            <div class="chat-biz-name">LaafConnect AI</div>
+            <div class="chat-online">● online</div>
+          </div>
+        </div>
+        <div class="chat-body" id="chat-body"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-item reveal"><div class="stat-num">24/7</div><div class="stat-label">Always online</div></div>
+  <div class="stat-item reveal reveal-delay-1"><div class="stat-num">11</div><div class="stat-label">SA languages</div></div>
+  <div class="stat-item reveal reveal-delay-2"><div class="stat-num">R499</div><div class="stat-label">Starting price</div></div>
+  <div class="stat-item reveal reveal-delay-3"><div class="stat-num">60s</div><div class="stat-label">Avg response time</div></div>
+</div>
+
+<!-- FEATURES -->
+<div id="features" style="background:var(--bg)">
+  <div class="section">
+    <div class="reveal">
+      <div class="section-label">Features</div>
+      <h2 class="section-title">Everything your business needs</h2>
+      <p class="section-sub">From instant FAQ replies to full appointment booking — all on WhatsApp, zero extra apps.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card reveal reveal-delay-1"><div class="feat-icon">🤖</div><div class="feat-title">AI-Powered Replies</div><div class="feat-desc">Trained on your business. Answers pricing, products, and policies in your brand's tone — instantly, any time.</div></div>
+      <div class="feat-card reveal reveal-delay-2"><div class="feat-icon">📅</div><div class="feat-title">Appointment Booking</div><div class="feat-desc">Customers book services directly in WhatsApp chat. Fully automated — date, time, service, confirmation.</div></div>
+      <div class="feat-card reveal reveal-delay-3"><div class="feat-icon">🎤</div><div class="feat-title">Voice Note Support</div><div class="feat-desc">Voice messages transcribed and answered automatically. Never miss a voice enquiry again.</div></div>
+      <div class="feat-card reveal reveal-delay-1"><div class="feat-icon">📊</div><div class="feat-title">Personal Dashboard</div><div class="feat-desc">Every client gets their own dashboard — live analytics, conversation history, AI prompt editor, business hours, and invoices.</div></div>
+      <div class="feat-card reveal reveal-delay-2"><div class="feat-icon">🔔</div><div class="feat-title">Escalation Alerts</div><div class="feat-desc">When a customer insists on a human, you're notified instantly so you can step in at the right moment.</div></div>
+      <div class="feat-card reveal reveal-delay-3"><div class="feat-icon">🧾</div><div class="feat-title">Automatic Invoicing</div><div class="feat-desc">Monthly invoices generated automatically. VAT-compliant, with paid/unpaid tracking built in.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LANGUAGES -->
+<section class="lang-section" id="languages">
+  <div class="lang-section-header reveal">
+    <div class="section-label">Languages</div>
+    <h2 class="section-title">Speaks your customer's language</h2>
+    <p>LaafConnect's AI replies fluently in all 11 official South African languages — your customers always feel understood.</p>
+  </div>
+  <div class="ticker-wrap"><div class="ticker-track" id="ticker1"></div></div>
+  <div class="ticker-wrap" style="margin-top:12px"><div class="ticker-track reverse" id="ticker2"></div></div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div id="how-it-works" style="background:var(--surface);border-top:1px solid var(--border)">
+  <div class="section">
+    <div class="hiw-grid">
+      <div class="reveal">
+        <div class="section-label">How It Works</div>
+        <h2 class="section-title">Live in under 10 minutes</h2>
+        <p class="section-sub">No coding. No IT team. We handle everything — you just scan a QR code.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal reveal-delay-1"><div class="step-num">1</div><div class="step-content"><div class="step-title">Register your business</div><div class="step-desc">Fill in your details below. We create your account and start building your AI assistant immediately.</div></div></div>
+        <div class="step reveal reveal-delay-2"><div class="step-num">2</div><div class="step-content"><div class="step-title">We configure your AI</div><div class="step-desc">Our team loads your business info, services, FAQs, and preferred language into your custom AI assistant.</div></div></div>
+        <div class="step reveal reveal-delay-3"><div class="step-num">3</div><div class="step-content"><div class="step-title">Scan one QR code</div><div class="step-desc">Link your WhatsApp number by scanning a single QR code we send you. Your AI goes live immediately.</div></div></div>
+        <div class="step reveal reveal-delay-4"><div class="step-num">4</div><div class="step-content"><div class="step-title">Manage from your dashboard</div><div class="step-desc">Edit your AI, track conversations, update hours, and view invoices — all from your personal client dashboard.</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PACKAGES -->
+<div id="packages" style="background:var(--bg);border-top:1px solid var(--border)">
+  <div class="section">
+    <div class="reveal" style="text-align:center">
+      <div class="section-label">Pricing</div>
+      <h2 class="section-title">Simple, transparent pricing</h2>
+      <p class="section-sub" style="margin:0 auto 48px;text-align:center">No hidden fees. VAT excluded. Cancel anytime. Every plan includes your own personal dashboard.</p>
+    </div>
+    <div class="packages-grid">
+
+      <!-- Pack 1 -->
+      <div class="pkg-outer plain reveal reveal-delay-1">
+        <div class="pkg-card">
+          <div class="pkg-tag t-blue">Starter</div>
+          <div class="pkg-name">Pack 1 — FAQ Only</div>
+          <div class="pkg-price">R499</div>
+          <div class="pkg-period">per month, excl VAT</div>
+          <div class="pkg-divider"></div>
+          <div class="pkg-features">
+            <div class="pkg-feature"><div class="feat-check c-blue">✓</div><span>5,000 messages per month</span></div>
+            <div class="pkg-feature"><div class="feat-check c-blue">✓</div><span>AI-powered FAQ replies 24/7</span></div>
+            <div class="pkg-feature"><div class="feat-check c-blue">✓</div><span>Replies in all 11 SA languages</span></div>
+            <div class="pkg-feature"><div class="feat-check c-blue">✓</div><span>Custom AI trained on your business</span></div>
+            <div class="pkg-feature"><div class="feat-check c-blue">✓</div><span>Personal client dashboard</span></div>
+            <div class="pkg-feature"><div class="feat-check c-blue">✓</div><span>Auto-generated monthly invoices</span></div>
+            <div class="pkg-feature"><div class="feat-check c-blue">✓</div><span>Escalation alerts when needed</span></div>
+          </div>
+          <button class="pkg-btn outline" onclick="goto('get-started');selectPack('pack1')">Get started with Pack 1</button>
+        </div>
+      </div>
+
+      <!-- Pack 2 -->
+      <div class="pkg-outer glowing-blue reveal reveal-delay-2">
+        <div class="pkg-card">
+          <div class="pkg-tag t-green">Most Popular</div>
+          <div class="pkg-name">Pack 2 — Full Suite</div>
+          <div class="pkg-price">R1000</div>
+          <div class="pkg-period">per month, excl VAT</div>
+          <div class="pkg-divider"></div>
+          <div class="pkg-features">
+            <div class="pkg-feature"><div class="feat-check c-green">✓</div><span>10,000 messages per month</span></div>
+            <div class="pkg-feature"><div class="feat-check c-green">✓</div><span>Everything in Pack 1</span></div>
+            <div class="pkg-feature"><div class="feat-check c-green">✓</div><span>Appointment booking system</span></div>
+            <div class="pkg-feature"><div class="feat-check c-green">✓</div><span>Voice note transcription (AI)</span></div>
+            <div class="pkg-feature"><div class="feat-check c-green">✓</div><span>Business hours management</span></div>
+            <div class="pkg-feature"><div class="feat-check c-green">✓</div><span>Services catalogue management</span></div>
+            <div class="pkg-feature"><div class="feat-check c-green">✓</div><span>Personal client dashboard</span></div>
+          </div>
+          <button class="pkg-btn s-blue" onclick="goto('get-started');selectPack('pack2')">Get started with Pack 2</button>
+        </div>
+      </div>
+
+      <!-- Web Dev -->
+      <div class="pkg-outer glowing-gold webdev-outer reveal reveal-delay-3">
+        <div class="pkg-card">
+          <div class="webdev-inner">
+            <div>
+              <div class="pkg-tag t-gold">Custom Development</div>
+              <div class="pkg-name">Custom Website Development</div>
+              <div class="pkg-price c-gold">R4,999</div>
+              <div class="pkg-period">starting price — once-off project</div>
+              <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px">We build fully custom, mobile-first websites tailored to your brand. Final price depends on scope — we'll quote you after a quick chat.</p>
+              <button class="pkg-btn s-gold" onclick="goto('get-started');selectPack('webdev')">Request a quote</button>
+            </div>
+            <div>
+              <div class="pkg-divider"></div>
+              <div class="pkg-features">
+                <div class="pkg-feature"><div class="feat-check c-gold">✓</div><span>Fully custom-designed website</span></div>
+                <div class="pkg-feature"><div class="feat-check c-gold">✓</div><span>Mobile-first, responsive layout</span></div>
+                <div class="pkg-feature"><div class="feat-check c-gold">✓</div><span>SEO-ready structure</span></div>
+                <div class="pkg-feature"><div class="feat-check c-gold">✓</div><span>WhatsApp chat integration</span></div>
+                <div class="pkg-feature"><div class="feat-check c-gold">✓</div><span>Contact forms &amp; booking pages</span></div>
+                <div class="pkg-feature"><div class="feat-check c-gold">✓</div><span>Handover with full ownership</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER FORM -->
+<div class="register-bg" id="get-started">
+  <div class="register-video-wrap">
+    <video autoplay muted loop playsinline>
+      <source src="views.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="register-wrap">
+    <div class="reveal" style="text-align:center">
+      <div class="section-label">Get Started</div>
+      <h2 class="section-title">Ready to get going?</h2>
+      <p style="font-size:14px;color:var(--muted);line-height:1.7">Fill in your details and your AI assistant will be set up automatically.</p>
+    </div>
+    <div class="register-card reveal">
+
+      <!-- SUCCESS STATE -->
+      <div class="form-success" id="form-success">
+        <div class="success-icon">✓</div>
+        <div class="success-title">You're all set!</div>
+        <p class="success-sub">Your AI assistant is being configured right now. Scan the QR code to connect your WhatsApp.</p>
+        <div class="success-email-note" id="success-email-note"></div>
+        <a class="btn-connect" id="btn-connect" href="#" target="_blank">Connect My WhatsApp →</a>
+        <p style="font-size:12px;color:var(--muted)">The connect page will show a live QR code to scan with WhatsApp.</p>
+      </div>
+
+      <!-- FORM -->
+      <div id="form-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="f-name" placeholder="Jane Smith" autocomplete="name">
+            <div class="form-err" id="err-name">Required</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Business Name</label>
+            <input type="text" class="form-input" id="f-biz" placeholder="My Business" autocomplete="organization">
+            <div class="form-err" id="err-biz">Required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="f-email" placeholder="name@business.co.za" autocomplete="email">
+          <div class="form-err" id="err-email">Enter a valid email address</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">WhatsApp Number</label>
+          <input type="tel" class="form-input" id="f-phone" placeholder="27831234567" autocomplete="tel">
+          <div class="form-err" id="err-phone">Enter a valid number (e.g. 27831234567)</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Business Type</label>
+            <div class="select-wrap">
+              <select class="form-select" id="f-type">
+                <option value="">Select industry…</option>
+                <option>Salon / Beauty</option>
+                <option>Clinic / Healthcare</option>
+                <option>Restaurant / Food</option>
+                <option>Retail / Shop</option>
+                <option>Tech / Agency</option>
+                <option>Property / Real Estate</option>
+                <option>Fitness / Wellness</option>
+                <option>Education / Tutoring</option>
+                <option>Automotive</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-err" id="err-type">Please select an option</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">AI Language <span class="form-opt">(optional)</span></label>
+            <div class="select-wrap">
+              <select class="form-select" id="f-lang">
+                <option value="">English (default)</option>
+                <option>isiZulu — Zulu</option>
+                <option>isiXhosa — Xhosa</option>
+                <option>Afrikaans</option>
+                <option>Sesotho sa Leboa — Sepedi</option>
+                <option>Setswana — Tswana</option>
+                <option>Sesotho — Sotho</option>
+                <option>Xitsonga — Tsonga</option>
+                <option>siSwati — Swati</option>
+                <option>Tshivenḓa — Venda</option>
+                <option>isiNdebele — Ndebele</option>
+                <option>Multilingual (auto-detect)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">I'm interested in</label>
+          <div class="select-wrap">
+            <select class="form-select" id="f-pack">
+              <option value="pack1">WhatsApp AI — Pack 1 FAQ (R499/mo)</option>
+              <option value="pack2">WhatsApp AI — Pack 2 Full Suite (R1000/mo)</option>
+              <option value="webdev">Custom Website Development (from R4,999)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">How did you hear about us? <span class="form-opt">(optional)</span></label>
+          <input type="text" class="form-input" id="f-source" placeholder="Referral, social media, Google…">
+        </div>
+        <button class="btn-register" id="submit-btn" onclick="submitForm()">Set Up My AI Assistant →</button>
+        <p class="form-note">14-day free trial. No credit card needed.<br>By submitting you agree to our <a href="#">Terms of Service</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <img src="logo.png" class="logo-img" style="width:28px;height:28px" alt="LaafConnect logo">
+      <span class="logo-text" style="font-size:14px">Laaf<span>Connect</span></span>
+    </div>
+    <p class="footer-copy">© 2025 LaafConnect. All rights reserved.</p>
+  </div>
+  <div class="footer-links">
+    <a href="#" class="footer-link">Privacy Policy</a>
+    <a href="#" class="footer-link">Terms of Service</a>
+    <a href="#" class="footer-link">Support</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// NAV SCROLL
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>40));
+
+// SCROLL HELPERS
+function goto(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'})}
+function selectPack(p){const s=document.getElementById('f-pack');if(s)s.value=p}
+
+// CHAT CONVERSATIONS
+const CONVOS=[
+  [{dir:'incoming',text:'Hi, what are your prices?',time:'09:01'},{dir:'typing'},{dir:'outgoing',text:'Hi! 👋 Our haircut starts at R150, colour from R350. Would you like to book an appointment?',time:'09:01',lang:'English'}],
+  [{dir:'incoming',text:'Sawubona, nibuka nini?',time:'10:14'},{dir:'typing'},{dir:'outgoing',text:'Sawubona! 😊 Sivula ngoMsombuluko–uLwesihlanu, 8h00–17h00. Ingabe ufuna ukubhukha?',time:'10:14',lang:'isiZulu'}],
+  [{dir:'incoming',text:"Hallo, kan ek 'n afspraak maak?",time:'11:30'},{dir:'typing'},{dir:'outgoing',text:'Hallo! 😊 Ja, sekerlik. Watter diens soek u, en watter datum werk vir u?',time:'11:30',lang:'Afrikaans'}],
+  [{dir:'incoming',text:'Do you offer wedding packages?',time:'14:05'},{dir:'typing'},{dir:'outgoing',text:'Yes we do! 💍 Bridal packages start from R1,200. Want me to send you the full list?',time:'14:05',lang:'English'}],
+  [{dir:'incoming',text:'Molweni, nifumana nini?',time:'15:20'},{dir:'typing'},{dir:'outgoing',text:'Molweni! 😊 Sivula ngoMvulo ukuya ngoLwesihlanu 08:00–17:00. Ungathanda ukubhukha?',time:'15:20',lang:'isiXhosa'}],
+];
+let ci=0,mq=[],mt=null;
+function runConvo(c){const b=document.getElementById('chat-body');if(!b)return;b.innerHTML='';mq=[...c];nextMsg(b);}
+function nextMsg(b){
+  if(!mq.length){mt=setTimeout(()=>{ci=(ci+1)%CONVOS.length;runConvo(CONVOS[ci]);},3000);return;}
+  const item=mq.shift();
+  if(item.dir==='typing'){
+    const t=document.createElement('div');
+    t.className='chat-typing show';
+    t.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    b.appendChild(t);b.scrollTop=b.scrollHeight;
+    mt=setTimeout(()=>{t.remove();nextMsg(b);},1300);return;
+  }
+  const el=document.createElement('div');
+  el.className=`chat-msg ${item.dir==='incoming'?'incoming':'outgoing'}`;
+  el.innerHTML=item.text+`<div class="chat-time">${item.time}</div>`;
+  b.appendChild(el);
+  if(item.lang){
+    const badge=document.createElement('div');
+    badge.className='chat-lang-badge';
+    badge.textContent=`Replied in ${item.lang}`;
+    b.appendChild(badge);
+    setTimeout(()=>badge.classList.add('visible'),80);
+  }
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('visible')));
+  b.scrollTop=b.scrollHeight;
+  mt=setTimeout(()=>nextMsg(b),item.dir==='incoming'?750:550);
+}
+setTimeout(()=>runConvo(CONVOS[0]),1000);
+
+// LANGUAGE TICKER
+const LANGS=[
+  {flag:'🇿🇦',name:'English',   native:'English'},
+  {flag:'🇿🇦',name:'Zulu',      native:'isiZulu'},
+  {flag:'🇿🇦',name:'Xhosa',     native:'isiXhosa'},
+  {flag:'🇿🇦',name:'Afrikaans', native:'Afrikaans'},
+  {flag:'🇿🇦',name:'Sepedi',    native:'Sesotho sa Leboa'},
+  {flag:'🇿🇦',name:'Tswana',    native:'Setswana'},
+  {flag:'🇿🇦',name:'Sotho',     native:'Sesotho'},
+  {flag:'🇿🇦',name:'Tsonga',    native:'Xitsonga'},
+  {flag:'🇿🇦',name:'Swati',     native:'siSwati'},
+  {flag:'🇿🇦',name:'Venda',     native:'Tshivenḓa'},
+  {flag:'🇿🇦',name:'Ndebele',   native:'isiNdebele'},
+];
+function buildTicker(id,items){
+  const t=document.getElementById(id);
+  if(!t)return;
+  t.innerHTML=[...items,...items].map(l=>`<div class="lang-pill"><span class="lang-flag">${l.flag}</span><div class="lang-info"><span class="lang-name">${l.name}</span><span class="lang-native">${l.native}</span></div></div>`).join('');
+}
+buildTicker('ticker1',LANGS);
+buildTicker('ticker2',[...LANGS].reverse());
+
+// SCROLL REVEAL
+const revealEls=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+},{threshold:0.05,rootMargin:'0px 0px -40px 0px'});
+revealEls.forEach(el=>obs.observe(el));
+setTimeout(()=>{revealEls.forEach(el=>el.classList.add('visible'));},1200);
+
+// FORM VALIDATION & SUBMIT
+function showErr(id,show){
+  const e=document.getElementById('err-'+id);
+  const i=document.getElementById('f-'+id);
+  if(e)e.style.display=show?'block':'none';
+  if(i)i.classList.toggle('error',show);
+}
+
+function isValidEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
+
+async function submitForm(){
+  const name  = document.getElementById('f-name').value.trim();
+  const biz   = document.getElementById('f-biz').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const phone = document.getElementById('f-phone').value.trim().replace(/\D/g,'');
+  const type  = document.getElementById('f-type').value;
+  const pack  = document.getElementById('f-pack').value;
+  const lang  = document.getElementById('f-lang').value;
+  const source= document.getElementById('f-source').value.trim();
+
+  let ok=true;
+  showErr('name',  !name);                    if(!name)                ok=false;
+  showErr('biz',   !biz);                     if(!biz)                 ok=false;
+  showErr('email', !isValidEmail(email));     if(!isValidEmail(email)) ok=false;
+  showErr('phone', phone.length < 10);        if(phone.length < 10)    ok=false;
+  showErr('type',  !type);                    if(!type)                ok=false;
+  if(!ok) return;
+
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true;
+  btn.textContent='Setting up…';
+
+  const clientName=biz
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g,'-')
+    .replace(/-+/g,'-')
+    .replace(/^-|-$/g,'')
+    .substring(0,40)||'client';
+
+  try {
+    const res=await fetch('/register',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        clientName,
+        packageType:(pack==='pack1'||pack==='pack2')?pack:'pack1',
+        clientPhone:phone,
+        contactName:name,
+        contactEmail:email,
+        businessType:type,
+        preferredLanguage:lang,
+        referralSource:source,
+        isWebDev:pack==='webdev'
+      })
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok&&data.error&&!data.error.includes('already'))throw new Error(data.error);
+    showSuccess(clientName,email,pack);
+  } catch(err){
+    console.warn('Register error:',err.message);
+    showSuccess(clientName,email,pack);
+  } finally {
+    btn.disabled=false;
+    btn.textContent='Set Up My AI Assistant →';
+  }
+}
+
+function showSuccess(clientName, email, pack){
+  const connectUrl = 'https://register.laafstyl.org/connect/' + clientName;
+
+  // Update email note
+  const noteEl = document.getElementById('success-email-note');
+  if(email){
+    noteEl.textContent = '📧 We\'re sending your connect link to ' + email;
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  // Update connect button — hide for web dev enquiries
+  const btnConnect = document.getElementById('btn-connect');
+  if(pack === 'webdev'){
+    btnConnect.style.display = 'none';
+    noteEl.textContent = 'Thanks for your enquiry! We\'ll contact you on WhatsApp within a few hours to discuss your project.';
+    noteEl.style.display = 'block';
+  } else {
+    btnConnect.href = connectUrl;
+    btnConnect.style.display = 'block';
+  }
+
+  document.getElementById('form-body').style.display='none';
+  document.getElementById('form-success').style.display='block';
+  toast('You\'re all set! Scan the QR code to go live.','success');
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.activeElement?.classList.contains('form-input'))submitForm();
+});
+
+// TOAST
+let tt;
+function toast(msg,type){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='toast show'+(type?' '+type:'');
+  clearTimeout(tt);
+  tt=setTimeout(()=>el.classList.remove('show'),3500);
+}
+</script>
 </body>
 </html>
