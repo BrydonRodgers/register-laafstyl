@@ -552,7 +552,7 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-i
           <input type="text" class="form-input" id="f-source" placeholder="Referral, social media, Google…">
         </div>
         <button class="btn-register" id="submit-btn" onclick="submitForm()">Set Up My AI Assistant →</button>
-        <p class="form-note">14-day free trial. No credit card needed.<br>By submitting you agree to our <a href="#">Terms of Service</a>.</p>
+        <p class="form-note">7-day free trial. No credit card needed.<br>By submitting you agree to our <a href="#">Terms of Service</a>.</p>
       </div>
     </div>
   </div>
@@ -705,7 +705,7 @@ async function submitForm(){
     .substring(0,40)||'client';
 
   try {
-    const res=await fetch('/register',{
+    const res=await fetch('https://laafconnect-api.laafstyl.org/register',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -725,7 +725,7 @@ async function submitForm(){
     showSuccess(clientName,email,pack);
   } catch(err){
     console.warn('Register error:',err.message);
-    showSuccess(clientName,email,pack);
+    toast('Something went wrong — please try again or WhatsApp us directly.','error');
   } finally {
     btn.disabled=false;
     btn.textContent='Set Up My AI Assistant →';
