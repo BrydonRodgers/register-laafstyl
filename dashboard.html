@@ -98,6 +98,10 @@ input:disabled { opacity:.45; }
 .badge.admin { background:var(--gold-dim); border-color:rgba(240,165,0,.35); color:var(--gold); }
 .badge.client { background:var(--card2); border-color:var(--border2); color:var(--muted); }
 .badge.client strong { color:var(--text); font-weight:600; }
+.badge.client { max-width:46vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.vw { display:none; }
+.grid-stats.three .stat:nth-child(3) { grid-column:1/-1; }
+.topbar-right { flex-wrap:nowrap; }
 .main { max-width:960px; margin:0 auto; padding:22px 16px 56px; }
 h1.page-title { font-family:var(--serif); font-weight:400; font-size:32px; line-height:1.1; }
 .page-sub { color:var(--muted); font-size:14px; margin-top:3px; }
@@ -196,6 +200,9 @@ h1.page-title { font-family:var(--serif); font-weight:400; font-size:32px; line-
 .skeleton { height:76px; border-radius:14px; background:var(--card); border:1px solid var(--border); }
 
 @media (min-width:640px) {
+  .vw { display:inline; }
+  .badge.client { max-width:none; }
+  .grid-stats.three .stat:nth-child(3) { grid-column:auto; }
   .login-card { padding:36px 34px; }
   .main { padding:30px 24px 64px; }
   .topbar { padding:6px 24px; }
@@ -282,7 +289,7 @@ h1.page-title { font-family:var(--serif); font-weight:400; font-size:32px; line-
     </a>
     <div class="topbar-right">
       <span class="badge admin" id="adminBadge" hidden>Admin</span>
-      <span class="badge client" id="clientPill" hidden>Viewing: <strong id="clientLabel"></strong></span>
+      <span class="badge client" id="clientPill" hidden><span class="vw">Viewing: </span><strong id="clientLabel"></strong></span>
       <button type="button" class="btn btn-ghost btn-sm" id="logoutBtn">Sign out</button>
     </div>
   </header>
