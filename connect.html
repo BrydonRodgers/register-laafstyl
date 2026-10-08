@@ -234,7 +234,10 @@ nav{position:relative;z-index:10;height:66px;display:flex;align-items:center;jus
 (function() {
   // ── Config ────────────────────────────────
   var POLL_INTERVAL = 20000; // 20 seconds
-  var clientName = window.location.pathname.split('/').pop() || '';
+  var params = new URLSearchParams(window.location.search);
+  var clientName = (params.get('client') || '').toLowerCase();
+  var accessToken = params.get('t') || '';
+  var API_BASE = 'https://connect.laafstyl.org';
   var pollTimer = null;
   var countdownTimer = null;
   var countdownSeconds = 20;
@@ -315,7 +318,7 @@ nav{position:relative;z-index:10;height:66px;display:flex;align-items:center;jus
       // Dashboard button
       var dashBtn = document.getElementById('btn-dashboard');
       if (dashBtn && data.clientName) {
-        dashBtn.href = '/client/' + data.clientName;
+        dashBtn.href = '/dashboard.html';
       }
 
     } else if (status === 'qr_ready') {
@@ -358,7 +361,7 @@ nav{position:relative;z-index:10;height:66px;display:flex;align-items:center;jus
   function fetchStatus() {
     if (!clientName) { renderState({ status: 'not_found' }); return; }
 
-    fetch('/client/' + encodeURIComponent(clientName) + '/qr-status')
+    fetch(API_BASE + '/client/' + encodeURIComponent(clientName) + '/qr-status', { headers: { 'x-connect-token': accessToken } })
       .then(function(res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
