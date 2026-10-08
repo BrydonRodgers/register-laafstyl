@@ -363,6 +363,7 @@ nav{position:relative;z-index:10;height:66px;display:flex;align-items:center;jus
 
     fetch(API_BASE + '/client/' + encodeURIComponent(clientName) + '/qr-status', { headers: { 'x-connect-token': accessToken } })
       .then(function(res) {
+        if (res.status === 404) return { status: 'not_found' };
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
       })
